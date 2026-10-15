@@ -1,1 +1,121 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>fania</title><script src="https://aframe.io/releases/1.5.0/aframe.min.js"><\/script><script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"><\/script><style>body{margin:0;font-family:system-ui}#tip{position:fixed;z-index:5;top:10px;left:10px;right:10px;background:#06152fe8;color:white;text-align:center;padding:11px;border-radius:12px}#controls{position:fixed;z-index:6;bottom:14px;left:0;right:0;text-align:center}button{padding:12px;border:0;border-radius:12px;background:#087bff;color:white;font-weight:bold;margin:3px}</style></head><body><div id="tip">Arahkan kamera ke kartu target.</div><div id="controls"><button id="play">▶ Putar ulang</button><button id="voice">🔊 Dengarkan narasi</button><button id="stop">Hentikan</button></div><a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: no; uiScanning: yes; uiError: no;" color-space="sRGB" renderer="colorManagement: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false"><a-assets><video id="media" src="./materi.mp4" playsinline preload="auto" loop muted></video></a-assets><a-camera position="0 0 0" look-controls="enabled: false"></a-camera><a-entity id="target" mindar-image-target="targetIndex: 0"><a-video src="#media" width="1.2" height="0.675" position="0 0.1 0"></a-video><a-text value="Happy Birthday Fania" align="center" color="#ff0000" width="3" position="0 0.85 0.03" animation="property: rotation; to: 0 360 0; dur: 3500; loop: true"></a-text></a-entity></a-scene><script>const n="",m="auto",rate=1,v=document.getElementById('media'),t=document.getElementById('target'),tip=document.getElementById('tip');function say(){if(n&&m!=='off'&&'speechSynthesis'in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(n);u.lang='id-ID';u.rate=rate;speechSynthesis.speak(u)}}t.addEventListener('targetFound',()=>{tip.textContent='Target terdeteksi! 🎉';v.play().catch(()=>{});if(m==='auto')say()});t.addEventListener('targetLost',()=>{v.pause();if('speechSynthesis'in window)speechSynthesis.cancel();tip.textContent='Arahkan kamera ke kartu target.'});document.getElementById('play').onclick=()=>{v.currentTime=0;v.play().catch(()=>{});;document.getElementById('voice').onclick=say;document.getElementById('stop').onclick=()=>{v.pause();if('speechSynthesis'in window)speechSynthesis.cancel()};<\/script></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06152f">
+<title>AR Ucapan Fania</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,sans-serif;background:#000}
+#tip{position:fixed;z-index:10;top:10px;left:10px;right:10px;background:#06152fe8;color:#fff;text-align:center;padding:11px;border-radius:12px}
+#controls{position:fixed;z-index:11;bottom:max(14px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;padding:0 8px}
+button{padding:12px 14px;border:0;border-radius:12px;background:#087bff;color:#fff;font-weight:bold;margin:3px;font-size:14px}
+#fallback{position:fixed;z-index:12;left:12px;right:12px;bottom:82px;background:#7b1d1d;color:white;border-radius:10px;padding:10px;display:none;text-align:center}
+</style>
+</head>
+<body>
+<div id="tip">Memuat AR… Izinkan akses kamera jika diminta.</div>
+<div id="fallback"></div>
+<div id="controls">
+  <button id="play" type="button">▶ Putar ulang</button>
+  <button id="voice" type="button">🔊 Dengarkan narasi</button>
+  <button id="stop" type="button">■ Hentikan</button>
+</div>
+
+<a-scene
+  mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes; uiError: yes;"
+  color-space="sRGB"
+  renderer="colorManagement: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false">
+  <a-assets>
+    <video id="media" src="./materi.mp4" playsinline webkit-playsinline preload="auto" loop muted crossorigin="anonymous"></video>
+  </a-assets>
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  <a-entity id="target" mindar-image-target="targetIndex: 0">
+    <a-video src="#media" width="1.2" height="0.675" position="0 0.1 0"></a-video>
+    <a-text value="Happy Birthday Fania" align="center" color="#ff4040" width="3" position="0 0.85 0.03"></a-text>
+  </a-entity>
+</a-scene>
+
+<script>
+(function(){
+  const narration = '';
+  const video = document.getElementById('media');
+  const target = document.getElementById('target');
+  const tip = document.getElementById('tip');
+  const fallback = document.getElementById('fallback');
+
+  function showError(message) {
+    fallback.textContent = message;
+    fallback.style.display = 'block';
+    tip.textContent = 'AR belum siap.';
+  }
+
+  function speak() {
+    if (!narration) {
+      tip.textContent = 'Belum ada teks narasi yang diatur untuk ucapan ini.';
+      return;
+    }
+    if (!('speechSynthesis' in window)) {
+      tip.textContent = 'Browser ini tidak mendukung narasi suara.';
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(narration);
+    utterance.lang = 'id-ID';
+    utterance.rate = 1;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  target.addEventListener('targetFound', function(){
+    tip.textContent = 'Kartu terdeteksi! 🎉';
+    video.play().catch(function(){
+      tip.textContent = 'Kartu terdeteksi. Tekan Putar ulang untuk memulai video.';
+    });
+  });
+
+  target.addEventListener('targetLost', function(){
+    video.pause();
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    tip.textContent = 'Arahkan kamera ke kartu target.';
+  });
+
+  document.getElementById('play').addEventListener('click', function(){
+    video.currentTime = 0;
+    video.play().then(function(){
+      tip.textContent = 'Video diputar.';
+    }).catch(function(){
+      tip.textContent = 'Video belum bisa diputar. Pastikan file materi.mp4 tersedia.';
+    });
+  });
+
+  document.getElementById('voice').addEventListener('click', speak);
+
+  document.getElementById('stop').addEventListener('click', function(){
+    video.pause();
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    tip.textContent = 'Pemutaran dihentikan. Arahkan kamera ke kartu target.';
+  });
+
+  window.addEventListener('load', function(){
+    if (!window.isSecureContext) {
+      showError('Kamera membutuhkan HTTPS. Buka halaman melalui alamat GitHub Pages https://bosmicin.github.io/adm_AR/ULTAH/fania/');
+    }
+    setTimeout(function(){
+      if (!document.querySelector('a-scene').hasLoaded) {
+        tip.textContent = 'AR masih dimuat. Periksa koneksi internet lalu muat ulang halaman.';
+      }
+    }, 8000);
+  });
+
+  window.addEventListener('error', function(event){
+    if (event && event.message) showError('Kesalahan halaman: ' + event.message);
+  });
+})();
+</script>
+</body>
+</html>
