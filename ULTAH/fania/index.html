@@ -32,10 +32,11 @@ button{padding:13px 16px;border:0;border-radius:12px;background:#087bff;color:#f
  vr-mode-ui="enabled: false"
  device-orientation-permission-ui="enabled: false">
  <a-assets>
-  <video id="video" src="./materi.mp4?v=3" preload="auto" loop muted playsinline webkit-playsinline></video>
+  <video id="video" src="./materi.mp4?v=4" preload="auto" loop muted playsinline webkit-playsinline></video>
  </a-assets>
  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
  <a-entity id="target" mindar-image-target="targetIndex: 0">
+  <!-- Video mengikuti rasio file, tinggi dibuat 1.15 unit agar sedikit lebih besar -->
   <a-video id="videoPlane" src="#video" width="1" height="1" position="0 0.1 0" rotation="0 0 0"></a-video>
   <a-text value="Happy Birthday Fania" align="center" color="#ff4040" width="3" position="0 0.85 0.03"></a-text>
  </a-entity>
@@ -47,37 +48,32 @@ button{padding:13px 16px;border:0;border-radius:12px;background:#087bff;color:#f
  const video=document.getElementById('video');
  const plane=document.getElementById('videoPlane');
  const pesan=document.getElementById('pesan');
- let found=false;
- let arStarted=false;
+ let found=false, arStarted=false;
 
  function status(text){pesan.textContent=text;}
 
- // Baca dimensi file video yang benar-benar dimuat, lalu ubah bidang AR
- // agar memiliki rasio yang sama. Tinggi dasar 1 unit, lebar = videoWidth/videoHeight.
+ // Rasio bidang mengikuti dimensi intrinsik file video. Tinggi dinaikkan
+ // menjadi 1.15 unit agar video sedikit lebih besar daripada ukuran sebelumnya.
  function fitPlaneToVideo(){
    const w=video.videoWidth, h=video.videoHeight;
    if(!w || !h) return;
    const ratio=w/h;
-   const planeHeight=1;
-   const planeWidth=planeHeight*ratio;
-   plane.setAttribute('width', planeWidth);
+   const planeHeight=1.15;
+   plane.setAttribute('width', planeHeight*ratio);
    plane.setAttribute('height', planeHeight);
-   status('Video siap ('+w+' × '+h+'). Rasio asli diterapkan. Arahkan kamera ke kartu Fania.');
  }
- video.addEventListener('loadedmetadata', fitPlaneToVideo);
- video.addEventListener('loadeddata', fitPlaneToVideo);
+ video.addEventListener('loadedmetadata',fitPlaneToVideo);
+ video.addEventListener('loadeddata',fitPlaneToVideo);
 
  scene.addEventListener('loaded',()=>status('Halaman siap. Mengaktifkan kamera…'));
  scene.addEventListener('arReady',()=>{arStarted=true;status('Kamera aktif. Arahkan kamera ke kartu Fania.');});
  scene.addEventListener('arError',()=>status('Kamera gagal dimulai. Izinkan kamera di pengaturan browser, lalu muat ulang.'));
  target.addEventListener('targetFound',()=>{
-   found=true;
-   status('Kartu terdeteksi! Selamat ulang tahun! 🎉');
+   found=true;status('Kartu terdeteksi! Selamat ulang tahun! 🎉');
    video.play().catch(()=>status('Kartu terdeteksi. Tekan Putar Video untuk memulai.'));
  });
  target.addEventListener('targetLost',()=>{
-   found=false;
-   video.pause();
+   found=false;video.pause();
    status(arStarted?'Kamera aktif. Arahkan kamera ke kartu Fania.':'Kamera sedang disiapkan…');
  });
  document.getElementById('mulai').addEventListener('click',async()=>{
