@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Belajar Ceria AR — Sapi</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#10251b;color:#fff}
+.top{padding:16px 18px;background:#174d32;position:relative;z-index:5}h1{font-size:21px;margin:0 0 4px}.sub{font-size:13px;opacity:.88}
+.panel{position:fixed;z-index:10;left:12px;right:12px;bottom:12px;padding:14px 16px;background:#ffffffef;color:#173323;border-radius:18px;box-shadow:0 5px 25px #0005}
+.status{font-weight:700;margin-bottom:5px}.hint{font-size:13px;line-height:1.45}
+button{border:0;border-radius:12px;background:#1e7548;color:white;padding:11px 14px;font-size:15px;font-weight:700;margin:10px 8px 0 0}
+button.secondary{background:#e7f2eb;color:#174d32}
+a-scene{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important}
+</style></head>
+<body>
+<div class="top"><h1>🐄 Belajar Ceria AR</h1><div class="sub">Percobaan 1 • Mengenal sapi dalam 3D</div></div>
+<div class="panel">
+<div class="status" id="status">Siap memulai</div>
+<div class="hint" id="hint">Tekan “Mulai kamera”, izinkan akses kamera, lalu arahkan HP ke seluruh kartu sapi yang sudah dicetak.</div>
+<button id="start">Mulai kamera</button><button class="secondary" id="sound">🔊 Dengarkan info sapi</button><button class="secondary" id="stop">Tutup kamera</button>
+</div>
+<a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiScanning: yes; uiLoading: yes; maxTrack: 1"
+ color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+<a-assets timeout="20000"><a-asset-item id="cowModel" src="https://api.flockbay.com/bootstrap/library/models/v1/ba6e9ba4fda35b568076a5d045daf2402f3a52cae1ce8f1a3ddc83ca675b4c78/animal-cow.glb"></a-asset-item></a-assets>
+<a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+<a-entity mindar-image-target="targetIndex: 0" id="target">
+<a-gltf-model src="#cowModel" position="0 0.05 0.1" rotation="0 0 0" scale="0.32 0.32 0.32" animation="property: rotation; to: 0 360 0; dur: 18000; easing: linear; loop: true"></a-gltf-model>
+<a-plane position="0 -0.35 0.05" width="0.9" height="0.16" color="#ffffff" opacity="0.9"></a-plane>
+<a-text value="SAPI" color="#174d32" align="center" width="2" position="0 -0.35 0.06"></a-text>
+</a-entity></a-scene>
+<script>
+const scene=document.querySelector('a-scene'),statusEl=document.getElementById('status'),hintEl=document.getElementById('hint');
+let mindar=null;
+scene.addEventListener('loaded',()=>{mindar=scene.systems['mindar-image-system'];const target=document.querySelector('#target');
+target.addEventListener('targetFound',()=>{statusEl.textContent='✅ Kartu terdeteksi!';hintEl.textContent='Sapi 3D muncul di atas kartu. Gerakkan HP perlahan untuk melihatnya.'});
+target.addEventListener('targetLost',()=>{statusEl.textContent='Mencari kartu sapi…';hintEl.textContent='Arahkan kamera ke seluruh kartu, dengan cahaya cukup dan tanpa pantulan.'})});
+document.getElementById('start').addEventListener('click',async()=>{try{
+if(!location.protocol.startsWith('http')){statusEl.textContent='Perlu dijalankan melalui HTTPS';hintEl.textContent='Unggah folder ke GitHub Pages atau hosting HTTPS gratis.';return}
+statusEl.textContent='Menyiapkan kamera…';if(!mindar){await new Promise(r=>scene.addEventListener('loaded',r,{once:true}));mindar=scene.systems['mindar-image-system']}
+await mindar.start();statusEl.textContent='Mencari kartu sapi…';hintEl.textContent='Pastikan targets.mind sudah dibuat dari marker-sapi.jpg.';document.getElementById('start').textContent='Kamera aktif';
+}catch(e){statusEl.textContent='Kamera belum bisa dijalankan';hintEl.textContent='Periksa izin kamera, koneksi internet, dan HTTPS. '+(e.message||e)}});
+document.getElementById('stop').addEventListener('click',async()=>{try{if(mindar)await mindar.stop()}catch(e){}statusEl.textContent='Kamera ditutup';hintEl.textContent='Tekan “Mulai kamera” untuk mencoba lagi.';document.getElementById('start').textContent='Mulai kamera'});
+document.getElementById('sound').addEventListener('click',()=>{if(!('speechSynthesis'in window)){alert('Browser ini tidak mendukung suara otomatis.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('Sapi adalah hewan mamalia. Sapi memakan rumput dan tumbuhan. Sapi betina dapat menghasilkan susu. Sapi mengeluarkan suara moo.');u.lang='id-ID';u.rate=.9;speechSynthesis.speak(u)});
+</script></body></html>
