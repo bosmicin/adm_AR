@@ -1,1 +1,65 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>ADM AR</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at top,#17447e,#06152f 55%,#020712);font:16px/1.6 system-ui,sans-serif;color:white;text-align:center}.card{width:min(100%,560px);padding:28px 22px;border:1px solid #54d9ff66;border-radius:24px;background:#071831e8}.logo{width:min(300px,78vw);max-height:220px;object-fit:contain}h1{font-size:clamp(30px,7vw,42px);margin:6px 0}.tag{color:#72e8ff;font-weight:800}.muted{color:#d7eaff}.status{font-size:14px;color:#b9d5f6;margin-top:12px}</style></head><body><main class="card"><img class="logo" src="./logo-adm-ar.png" alt="ADM AR"><h1 id="h">ADM AR</h1><p class="tag">Augmented Reality Experience</p><p class="muted" id="m">AR edukasi dan ucapan personal.</p><p class="muted">Buka link ucapan yang diberikan lalu pindai kartu pada kado.</p><div id="s" class="status">Memeriksa link…</div></main><script>(async()=>{const p=new URLSearchParams(location.search),slug=(p.get('ucapan')||'').trim().toLowerCase(),s=document.getElementById('s');if(!slug){s.textContent='Untuk ucapan pribadi, gunakan link ?ucapan=nama.';return}try{const r=await fetch('./ucapan.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('ucapan.json belum diunggah di root');const d=await r.json(),i=d[slug];if(!i)throw Error('Ucapan '+slug+' belum ada dalam ucapan.json');const path=i.projectPath||((i.folder||'').replace(/\\/$/,'')+'/index.html');if(!path||path==='/index.html')throw Error('projectPath belum ada. Buat ulang proyek dengan tool ADM AR terbaru.');document.getElementById('h').textContent='Ucapan Spesial';s.textContent='Membuka kamera…';location.replace('./'+path.replace(/^\\/+/,''));}catch(e){s.textContent=e.message}})();<\/script></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06152f">
+<title>ADM AR</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at top,#17447e,#06152f 55%,#020712);font:16px/1.6 system-ui,sans-serif;color:#fff;text-align:center}
+.card{width:min(100%,560px);padding:28px 22px;border:1px solid #54d9ff66;border-radius:24px;background:#071831e8;box-shadow:0 18px 55px #0006}
+.logo{width:min(300px,78vw);max-height:220px;object-fit:contain}
+h1{font-size:clamp(30px,7vw,42px);margin:6px 0;line-height:1.15}
+.tag{color:#72e8ff;font-weight:800}
+.muted{color:#d7eaff}
+.status{font-size:14px;color:#b9d5f6;margin-top:12px;overflow-wrap:anywhere}
+a{color:#72e8ff}
+</style>
+</head>
+<body>
+<main class="card">
+<img class="logo" src="./logo-adm-ar.png" alt="Logo ADM AR" onerror="this.style.display='none'">
+<h1 id="heading">ADM AR</h1>
+<p class="tag">Augmented Reality Experience</p>
+<p class="muted" id="message">AR edukasi dan ucapan personal.</p>
+<p class="muted">Buka link ucapan yang diberikan, lalu pindai kartu pada kado.</p>
+<div id="status" class="status">Memeriksa link…</div>
+</main>
+<script>
+(async function(){
+  const status = document.getElementById('status');
+  const heading = document.getElementById('heading');
+  const message = document.getElementById('message');
+  const params = new URLSearchParams(window.location.search);
+  const slug = (params.get('ucapan') || '').trim().toLowerCase();
+
+  if (!slug) {
+    status.textContent = 'Website siap. Untuk ucapan pribadi, gunakan link dengan ?ucapan=nama.';
+    return;
+  }
+
+  try {
+    const response = await fetch('./ucapan.json?ts=' + Date.now(), {cache:'no-store'});
+    if (!response.ok) throw new Error('File ucapan.json tidak bisa dibaca. Periksa apakah file ada di folder utama repositori.');
+
+    const data = await response.json();
+    const item = data[slug];
+    if (!item) throw new Error('Ucapan "' + slug + '" belum terdaftar di ucapan.json.');
+
+    let path = item.projectPath;
+    if (!path && item.folder) path = item.folder.replace(/\/+$/, '') + '/index.html';
+    if (!path) throw new Error('projectPath atau folder untuk "' + slug + '" belum diisi di ucapan.json.');
+
+    heading.textContent = 'Ucapan Spesial';
+    message.textContent = 'Menyiapkan kejutan untuk ' + (item.recipient || item.title || slug) + '…';
+    status.textContent = 'Membuka halaman AR…';
+    window.location.replace(new URL(path.replace(/^\/+/, ''), window.location.href).href);
+  } catch (error) {
+    status.textContent = 'Gagal membuka link: ' + error.message;
+    message.textContent = 'Periksa konfigurasi ucapan.json dan nama folder di GitHub.';
+  }
+})();
+</script>
+</body>
+</html>
