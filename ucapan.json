@@ -1,0 +1,15 @@
+{
+  "fania": {
+    "recipient": "fania",
+    "title": "fania",
+    "subtitle": "Pindai kartu pada kado untuk membuka kejutan.",
+    "type": "video",
+    "folder": "ULTAH/fania",
+    "projectPath": "ULTAH/fania/index.html",
+    "targetPath": "ULTAH/fania/targets.mind",
+    "mediaPath": "ULTAH/fania/materi.mp4",
+    "overlay": "Happy Birthday Fania",
+    "narration": "",
+    "narrationMode": "auto"
+  }
+}
