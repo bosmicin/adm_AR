@@ -9,9 +9,9 @@
       "type": "custom-text",
       "name": "Happy Birthday",
       "posX": 0,
-      "posY": 2.752282521089937,
+      "posY": 1.9228571430606154,
       "posZ": 0,
-      "animation": "none",
+      "animation": "bounce",
       "eduTitle": "Teks Baru",
       "eduDesc": "",
       "fileName": null,
@@ -19,7 +19,7 @@
       "color": "#ff00d0",
       "position": [
         0,
-        2.752282521089937,
+        1.9228571430606154,
         0
       ],
       "rotation": [
@@ -37,9 +37,9 @@
       "type": "custom-text",
       "name": "FANIA",
       "posX": 0,
-      "posY": 2.2715569286993835,
+      "posY": 1.259133308455858,
       "posZ": 0,
-      "animation": "none",
+      "animation": "spin",
       "eduTitle": "Teks Baru",
       "eduDesc": "",
       "fileName": null,
@@ -47,12 +47,12 @@
       "color": "#ff00ae",
       "position": [
         0,
-        2.2715569286993835,
+        1.259133308455858,
         0
       ],
       "rotation": [
         0,
-        0,
+        75.9750000000025,
         0
       ],
       "scale3": [
@@ -65,7 +65,7 @@
       "type": "custom-video",
       "name": "materi.mp4",
       "posX": 0,
-      "posY": 1,
+      "posY": -0.0045340223985488315,
       "posZ": 0,
       "animation": "none",
       "eduTitle": "materi.mp4",
@@ -75,7 +75,7 @@
       "color": "#ffffff",
       "position": [
         0,
-        1,
+        -0.0045340223985488315,
         0
       ],
       "rotation": [
