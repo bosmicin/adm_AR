@@ -1,1 +1,117 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>varen</title><script src="https://aframe.io/releases/1.5.0/aframe.min.js"><\/script><script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"><\/script><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent!important;font-family:system-ui,Arial,sans-serif}a-scene{position:fixed!important;inset:0!important;width:100%!important;height:100%!important;background:transparent!important}a-scene canvas,.a-canvas{background:transparent!important}#tip{position:fixed;z-index:1000;top:10px;left:10px;right:10px;background:#06152fe8;color:white;text-align:center;padding:12px;border-radius:12px;pointer-events:none}#controls{position:fixed;z-index:1001;bottom:max(14px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;padding:0 8px}button{padding:12px 14px;border:0;border-radius:12px;background:#087bff;color:white;font-weight:bold;margin:3px}</style></head><body><div id="tip">Memuat AR… Izinkan akses kamera jika diminta.</div><div id="controls"><button id="play">▶ Putar ulang</button><button id="voice">🔊 Dengarkan narasi</button><button id="stop">Hentikan</button></div><a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: no; uiScanning: yes; uiError: no;" color-space="sRGB" renderer="colorManagement: true; alpha: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false"><a-assets><img id="media" src="./gambar.jpg"></a-assets><a-camera position="0 0 0" look-controls="enabled: false"></a-camera><a-entity id="target" mindar-image-target="targetIndex: 0"><a-image id="mediaPlane" src="#media" width="1" height="1" position="0 0.1 0"></a-image><a-text value="Mikail Defanio Alvarendra" align="center" color="#004cff" width="3" position="0 0.85 0.03" animation="property: position; to: 0 1 0.03; dir: alternate; dur: 1200; loop: true"></a-text></a-entity></a-scene><script>const n="Halo Nama saya varen, saya sekolah paud.",m="auto",rate=1,v=document.getElementById('media'),plane=document.getElementById('mediaPlane'),scene=document.querySelector('a-scene'),t=document.getElementById('target'),tip=document.getElementById('tip');function fitMedia(){const w=v.naturalWidth,h=v.naturalHeight;if(!w||!h||!plane)return;const ph=1.15;plane.setAttribute('width',ph*w/h);plane.setAttribute('height',ph)}v.addEventListener('load',fitMedia);scene.addEventListener('arReady',()=>{tip.textContent='Kamera aktif. Arahkan ke gambar target.'});scene.addEventListener('arError',()=>{tip.textContent='Kamera gagal dimulai. Izinkan akses kamera lalu muat ulang.'});function say(){if(n&&m!=='off'&&'speechSynthesis'in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(n);u.lang='id-ID';u.rate=rate;speechSynthesis.speak(u)}}t.addEventListener('targetFound',()=>{tip.textContent='Target terdeteksi! 🎉';if(m==='auto')say()});t.addEventListener('targetLost',()=>{if('speechSynthesis'in window)speechSynthesis.cancel();tip.textContent='Arahkan kamera ke kartu target.'});document.getElementById('play').onclick=()=>{tip.textContent="Konten gambar tampil saat target terdeteksi."};document.getElementById('voice').onclick=say;document.getElementById('stop').onclick=()=>{if('speechSynthesis'in window)speechSynthesis.cancel()};<\/script></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06152f">
+<title>varen</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js">
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js">
+
+</script>
+<style>
+* {
+  box-sizing:border-box}
+html,body {
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:transparent!important;
+  font-family:system-ui,Arial,sans-serif}
+body {
+  position:fixed;
+  inset:0}
+a-scene {
+  position:fixed!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  background:transparent!important}
+a-scene canvas,.a-canvas {
+  background:transparent!important}
+#tip {
+  position:fixed;
+  z-index:1000;
+  top:12px;
+  left:12px;
+  right:12px;
+  padding:12px 14px;
+  border-radius:14px;
+  background:#06152fe8;
+  color:#fff;
+  text-align:center;
+  font-size:clamp(14px,3.8vw,18px);
+  line-height:1.4;
+  pointer-events:none}
+#controls {
+  position:fixed;
+  z-index:1001;
+  bottom:max(14px,env(safe-area-inset-bottom));
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:0 10px}
+button {
+  padding:13px 16px;
+  border:0;
+  border-radius:12px;
+  background:#087bff;
+  color:white;
+  font-size:15px;
+  font-weight:750;
+  box-shadow:0 3px 12px #0003}
+</style>
+</head>
+<body>
+<div id="tip">Memuat AR… Izinkan akses kamera jika diminta.</div>
+<div id="controls">
+<button id="start" type="button">Mulai Kamera AR</button>
+<button id="voice" type="button">🔊 Dengarkan narasi</button>
+</div>
+<a-scene id="scene" mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes; uiError: yes;" color-space="sRGB" renderer="colorManagement: true; alpha: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+<a-assets>
+<img id="media" src="./gambar.jpg?v=1792110296699" crossorigin="anonymous">
+</a-assets>
+<a-camera position="0 0 0" look-controls="enabled: false">
+</a-camera>
+<a-entity id="target" mindar-image-target="targetIndex: 0">
+<a-image id="mediaPlane" src="#media" width="1" height="1" position="0 0.1 0">
+</a-image>
+</a-entity>
+</a-scene>
+<script>
+const n="",m="button",rate=1,scene=document.getElementById('scene'),v=document.getElementById('media'),plane=document.getElementById('mediaPlane'),t=document.getElementById('target'),tip=document.getElementById('tip');
+  let found=false,arReady=false;
+  function status(s){tip.textContent=s}function fitMedia(){let w=v.naturalWidth,h=v.naturalHeight;
+  if(!w||!h)return;
+  const ph=1.15,pw=ph*w/h;
+  plane.setAttribute('width',pw);
+  plane.setAttribute('height',ph);
+  const ot=document.getElementById('overlayText');
+  if(ot)ot.setAttribute('position',{x:0,y:0.1+ph/2+0.14,z:0.03});}
+  v.addEventListener('loadedmetadata',fitMedia);
+  v.addEventListener('loadeddata',fitMedia);
+  v.addEventListener('load',fitMedia);
+  scene.addEventListener('loaded',()=>status('Halaman siap. Mengaktifkan kamera…'));
+  scene.addEventListener('arReady',()=>{arReady=true;status('Kamera aktif. Arahkan kamera ke gambar target.');});
+  scene.addEventListener('arError',()=>status('Kamera gagal dimulai. Izinkan kamera di browser lalu muat ulang.'));
+  function say(){if(n&&m!=='off'&&'speechSynthesis'in window){speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(n);u.lang='id-ID';u.rate=rate;speechSynthesis.speak(u)}}
+  t.addEventListener('targetFound',()=>{found=true;status('Target terdeteksi! 🎉');
+  if(m==='auto')say()});t.addEventListener('targetLost',()=>{found=false;
+  if('speechSynthesis'in window)speechSynthesis.cancel();status(arReady?'Kamera aktif. Arahkan kamera ke gambar target.':'Kamera sedang disiapkan…')});
+  document.getElementById('start').onclick=async()=>{try{status('Memulai kamera AR…');
+  const sys=scene.systems['mindar-image-system'];
+  if(sys&&sys.start)await sys.start();status('Permintaan kamera dikirim. Tunggu sebentar…')}catch(e){status('Kamera gagal dimulai: '+(e.message||e))}};
+  document.getElementById('voice').onclick=say;
+  window.addEventListener('error',e=>{if(e.message)status('Kesalahan: '+e.message)});
+  window.addEventListener('unhandledrejection',e=>status('Gagal memuat: '+(e.reason&&e.reason.message?e.reason.message:String(e.reason))));
+</script>
+</body>
+</html>
