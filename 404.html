@@ -1,0 +1,17 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Membuka ADM AR Viewer…</title></head><body><p>Membuka pengalaman ADM AR…</p><script>
+(function(){
+  var path=location.pathname;
+  var parts=path.split('/').filter(Boolean);
+  // GitHub Pages path format: /REPOSITORY/FOLDER/ or /FOLDER/ on a custom domain.
+  var repo='adm_AR'; var i=parts.indexOf(repo);
+  var folder='';
+  if(i>=0 && parts.length>i+1) folder=parts[i+1];
+  else if(parts.length) folder=parts[parts.length-1];
+  if(folder && folder!=='404.html' && /^[a-zA-Z0-9_-]+$/.test(folder)){
+    var base=(i>=0?'/'+repo+'/':'/');
+    location.replace(base+'?folder='+encodeURIComponent(folder));
+  }else{
+    location.replace('/adm_AR/');
+  }
+})();
+</script></body></html>
