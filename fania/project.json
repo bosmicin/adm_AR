@@ -1,0 +1,99 @@
+{
+  "app": "ADM AR Studio",
+  "version": 2,
+  "savedAt": "2026-10-16T20:22:01.081Z",
+  "objects": [
+    {
+      "id": "adm_text_1792181916562",
+      "name": "Happy Birthday",
+      "type": "custom-text",
+      "fileName": null,
+      "pos": [
+        0,
+        3.1933808217847997,
+        0
+      ],
+      "rot": [
+        0,
+        0,
+        0
+      ],
+      "scale3": [
+        1,
+        1,
+        1
+      ],
+      "scale": 1,
+      "animation": "bounce",
+      "eduTitle": "Teks Baru",
+      "eduDesc": "",
+      "color": "#ff00d0",
+      "textValue": "Happy Birthday"
+    },
+    {
+      "id": "adm_text_1792181916567",
+      "name": "FANIA",
+      "type": "custom-text",
+      "fileName": null,
+      "pos": [
+        0,
+        2.6633808217848,
+        0
+      ],
+      "rot": [
+        0,
+        0,
+        0
+      ],
+      "scale3": [
+        1,
+        1,
+        1
+      ],
+      "scale": 1,
+      "animation": "bounce",
+      "eduTitle": "Teks Baru",
+      "eduDesc": "",
+      "color": "#ff00ae",
+      "textValue": "FANIA"
+    },
+    {
+      "id": "upload_1792181996291",
+      "name": "materi.mp4",
+      "type": "custom-video",
+      "fileName": "materi.mp4",
+      "pos": [
+        0,
+        1.3520722268694425,
+        0
+      ],
+      "rot": [
+        0,
+        0,
+        0
+      ],
+      "scale3": [
+        1.3,
+        1.3,
+        1.3
+      ],
+      "scale": 1.3,
+      "animation": "none",
+      "eduTitle": "materi.mp4",
+      "eduDesc": "Video unggahan: materi.mp4",
+      "color": "#ffffff",
+      "textValue": null
+    }
+  ],
+  "targetImage": {
+    "name": "marker-target.jpg",
+    "fileName": "marker-target.jpg"
+  },
+  "targetsMind": "targets.mind",
+  "assets": [
+    {
+      "name": "materi.mp4",
+      "kind": "video"
+    }
+  ]
+}
