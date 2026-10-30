@@ -24,12 +24,46 @@
  function cleanupUrls(){objectUrls.forEach(URL.revokeObjectURL);objectUrls=[];assetUrls.clear()}
  async function loadRemote(url){cleanupUrls();localMode=false;let u=new URL(url,location.href);baseUrl=u.href.substring(0,u.href.lastIndexOf('/')+1);status('Memuat project.json…');const r=await fetch(u.href,{cache:'no-store'});if(!r.ok)throw new Error('project.json tidak ditemukan (HTTP '+r.status+').');project=await r.json();if(!project||!Array.isArray(project.objects))throw new Error('Format project.json tidak dikenali.');mindUrl=new URL('targets.mind',baseUrl).href;await detectTargetAspect();await checkRemoteAssets();renderReady()}
  async function checkRemoteAssets(){const missing=[];for(const o of project.objects){if(o.fileName&&!['custom-text'].includes(o.type)){const u=new URL('assets/'+encodeURIComponent(safeName(o.fileName)),baseUrl).href;try{const r=await fetch(u,{method:'HEAD'});if(r.ok)assetUrls.set(o.fileName,u);else missing.push(o.fileName)}catch{missing.push(o.fileName)}}}try{const r=await fetch(mindUrl,{method:'HEAD'});if(!r.ok)throw new Error()}catch{throw new Error('File targets.mind tidak ditemukan di folder yang sama dengan project.json.');}if(missing.length)throw new Error('Aset belum ditemukan di folder assets/: '+[...new Set(missing)].join(', '));}
- async function loadZip(file){cleanupUrls();localMode=true;status('Membaca ZIP proyek…');const zip=await JSZip.loadAsync(file);const pf=zip.file('project.json');if(!pf)throw new Error('ZIP tidak berisi project.json.');project=JSON.parse(await pf.async('text'));if(!Array.isArray(project.objects))throw new Error('Format proyek tidak dikenali.');const mind=zip.file('targets.mind');if(!mind)throw new Error('ZIP belum berisi targets.mind. Impor targets.mind di Studio lalu simpan ulang proyek.');mindUrl=URL.createObjectURL(await mind.async('blob'));objectUrls.push(mindUrl);await detectTargetAspect(zip);for(const [path,entry] of Object.entries(zip.files)){if(entry.dir)continue;const n=safeName(path);if(path.startsWith('assets/')||path.startsWith('targets/')){const url=URL.createObjectURL(await entry.async('blob'));objectUrls.push(url);assetUrls.set(n,url)}}for(const o of project.objects){if(o.fileName&&!assetUrls.has(o.fileName))throw new Error('Aset '+o.fileName+' tidak ada di ZIP.');}renderReady()}
- async function detectTargetAspect(zip=null){
+ async function loadZip(file){
+  cleanupUrls();localMode=true;
+  const zip=await JSZip.loadAsync(file);
+  const projectPath=Object.keys(zip.files).find(path=>!zip.files[path].dir&&/(^|\/)project\.json$/i.test(path));
+  if(!projectPath)throw new Error('ZIP tidak berisi project.json.');
+  const root=projectPath.slice(0,projectPath.lastIndexOf('/')+1);
+  const pf=zip.file(projectPath);
+  project=JSON.parse(await pf.async('text'));
+  if(!project||!Array.isArray(project.objects))throw new Error('Format proyek tidak dikenali.');
+  const mind=zip.file(root+'targets.mind')||zip.file(root+'targets/targets.mind');
+  if(!mind)throw new Error('File targets.mind tidak ditemukan di dalam ZIP.');
+  mindUrl=URL.createObjectURL(await mind.async('blob'));objectUrls.push(mindUrl);
+  await detectTargetAspect(zip,root);
+  for(const [path,entry] of Object.entries(zip.files)){
+    if(entry.dir)continue;
+    const rel=path.startsWith(root)?path.slice(root.length):path;
+    if(rel.startsWith('assets/')||rel.startsWith('targets/')){
+      const n=safeName(rel);
+      const url=URL.createObjectURL(await entry.async('blob'));
+      objectUrls.push(url);assetUrls.set(n,url);
+    }
+  }
+  for(const o of project.objects){
+    if(o.fileName&&!['custom-text'].includes(o.type)&&!assetUrls.has(safeName(o.fileName)))
+      throw new Error('Aset '+o.fileName+' tidak ada di dalam ZIP.');
+  }
+  renderReady();
+}
+async function loadRemoteZip(url){
+  cleanupUrls();
+  const response=await fetch(url,{cache:'no-store'});
+  if(!response.ok)throw new Error('File ZIP tidak ditemukan: '+url+' (HTTP '+response.status+').');
+  const blob=await response.blob();
+  await loadZip(blob);
+}
+ async function detectTargetAspect(zip=null,zipRoot=''){
    targetAspect=1; const meta=project&&project.targetImage;
    if(meta&&Number(meta.width)>0&&Number(meta.height)>0){targetAspect=Number(meta.width)/Number(meta.height);return;}
    const name=meta&&safeName(meta.fileName||meta.name); if(!name)return;
-   try{let url;if(zip){const entry=zip.file('targets/'+name)||zip.file(name);if(!entry)return;url=URL.createObjectURL(await entry.async('blob'));objectUrls.push(url);}else{url=new URL('targets/'+encodeURIComponent(name),baseUrl).href;}
+   try{let url;if(zip){const entry=zip.file(zipRoot+'targets/'+name)||zip.file(zipRoot+name)||zip.file('targets/'+name)||zip.file(name);if(!entry)return;url=URL.createObjectURL(await entry.async('blob'));objectUrls.push(url);}else{url=new URL('targets/'+encodeURIComponent(name),baseUrl).href;}
    const img=new Image();await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=url;});if(img.naturalWidth&&img.naturalHeight)targetAspect=img.naturalWidth/img.naturalHeight;
    }catch(e){console.warn('Rasio target tidak dapat dibaca; memakai rasio default.',e);}
  }
@@ -64,7 +98,7 @@
   try{
     if(folder){
       if(!/^[a-zA-Z0-9_-]+$/.test(folder))throw new Error('Nama folder hanya boleh berisi huruf, angka, tanda hubung, dan garis bawah.');
-      await loadRemote(folder+'/project.json');
+      await loadRemoteZip(folder.toUpperCase()+'.zip');
     }else if(src){
       await loadRemote(src);
     }else{
