@@ -9,7 +9,7 @@
       "type": "custom-video",
       "name": "Desain tanpa judul.mp4",
       "posX": 0,
-      "posY": 1,
+      "posY": 0,
       "posZ": 0,
       "animation": "none",
       "eduTitle": "Desain tanpa judul.mp4",
@@ -19,7 +19,7 @@
       "color": "#ffffff",
       "position": [
         0,
-        1,
+        0,
         0
       ],
       "rotation": [
