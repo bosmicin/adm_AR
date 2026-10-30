@@ -1,0 +1,37 @@
+{
+  "brand": "ADM AR Studio",
+  "targetImage": {
+    "name": "UNKAFA.png",
+    "note": "Letakkan gambar target ini bersama proyek; file targets.mind harus dibuat terpisah."
+  },
+  "objects": [
+    {
+      "type": "custom-video",
+      "name": "Desain tanpa judul.mp4",
+      "posX": 0,
+      "posY": 1,
+      "posZ": 0,
+      "animation": "none",
+      "eduTitle": "Desain tanpa judul.mp4",
+      "eduDesc": "Video unggahan: Desain tanpa judul.mp4",
+      "fileName": "Desain tanpa judul.mp4",
+      "textValue": null,
+      "color": "#ffffff",
+      "position": [
+        0,
+        1,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale3": [
+        1,
+        1,
+        1
+      ]
+    }
+  ]
+}
