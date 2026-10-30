@@ -57,8 +57,9 @@
  async function startAR(){if(!project)return;busy(true,'Memulai kamera AR…');try{$('ar-stage').classList.add('active');buildScene();await new Promise(r=>setTimeout(r,900));const scene=document.querySelector('#adm-ar-scene');if(scene&&scene.hasLoaded){busy(false)}else if(scene){scene.addEventListener('loaded',()=>busy(false),{once:true});setTimeout(()=>busy(false),5000)}started=true;}catch(e){busy(false);$('ar-stage').classList.remove('active');alert('Tidak bisa memulai AR: '+e.message)}}
  function stopAR(){const scene=document.querySelector('#adm-ar-scene');if(scene){try{const sys=scene.systems['mindar-image-system'];if(sys&&sys.stop)sys.stop()}catch(e){}scene.parentNode.removeChild(scene)}$('ar-stage').classList.remove('active');started=false;}
  async function init(){
+  busy(true);
   const params=new URLSearchParams(location.search);
-  const folder=(params.get('folder')||'').trim().replace(/^\\/+|\\/+$/g,'');
+  const folder=(params.get('folder')||'').trim().replace(/^\/+|\/+$/g,'');
   const src=params.get('project');
   try{
     if(folder){
