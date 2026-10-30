@@ -98,7 +98,8 @@ async function loadRemoteZip(url){
   try{
     if(folder){
       if(!/^[a-zA-Z0-9_-]+$/.test(folder))throw new Error('Nama folder hanya boleh berisi huruf, angka, tanda hubung, dan garis bawah.');
-      await loadRemoteZip(folder.toUpperCase()+'.zip');
+      const zipName=/\.zip$/i.test(folder)?folder:folder+'.zip';
+      await loadRemoteZip(zipName);
     }else if(src){
       await loadRemote(src);
     }else{
